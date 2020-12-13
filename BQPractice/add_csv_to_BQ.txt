@@ -1,0 +1,6 @@
+step 1: click > CREATE DATASET
+step 2: add dataset id > taxi_dataset
+step 3: click > taxi_dataset > CREATE Table
+step 4: choose "upload" in "create table" option and from "browse" .csv file in select file option
+setp 5: add a table name
+step 6: click > create table
