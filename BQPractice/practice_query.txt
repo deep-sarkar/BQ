@@ -1,0 +1,104 @@
+-- 1.Demo query
+SELECT
+  unique_key,
+  trip_seconds,
+  trip_miles,
+  trip_total
+FROM
+  `bigquerypratice.taxi_dataset.taxi_trip_sample`
+LIMIT
+  1000
+
+
+-- 2. Aggrigate function (sum)
+SELECT
+  taxi_id ,
+  sum(trip_miles) as total_miles,
+  sum(trip_total) as total_value,
+FROM
+  `bigquerypratice.taxi_dataset.taxi_trip_sample`
+GROUP BY 1
+
+-- 3. where
+SELECT
+  company,
+  payment_type,
+  SUM(trip_total) AS trip_total,
+FROM
+  `bigquerypratice.taxi_dataset.taxi_trip_sample`
+WHERE
+  company IS NOT NULL AND payment_type = "Dispute"
+GROUP BY
+  1,
+  2
+ORDER BY
+  trip_total DESC
+
+
+
+-- 4.subquery
+WITH taxi_subset AS (
+
+SELECT
+  company,
+  payment_type,
+  SUM(trip_total) AS trip_grand_total,
+FROM
+  `bigquerypratice.taxi_dataset.taxi_trip_sample`
+WHERE
+  company IS NOT NULL 
+GROUP BY
+  1,
+  2
+ORDER BY
+  trip_grand_total DESC
+  )
+  
+ SELECT * 
+ FROM taxi_subset
+ WHERE trip_grand_total > 1000
+
+
+--  5. array
+SELECT
+  date,
+  ARRAY_AGG(DISTINCT fullVisitorId)  as Visitor_id,
+  ARRAY_AGG(DISTINCT v2ProductName) as Product_name,
+  ARRAY_LENGTH(ARRAY_AGG(DISTINCT v2ProductName)) as Product_View
+FROM
+  `data-to-insights.ecommerce.all_sessions`
+WHERE
+  date IN ("20170729",
+    "20170731")
+  AND fullVisitorId = "494924073421470657"
+GROUP BY 
+  date
+
+-- 6. Joins
+SELECT
+  a.Campaign_Name,
+  a.Impressions,
+  a.Clicks,
+  a.Actual_Spend,
+  b.Planned_spend
+FROM
+  `bigquerypratice.joins.actual_spend` AS a
+JOIN
+  `bigquerypratice.joins.planned_spend` AS b
+ON
+  a.Campaign_Name = b.Campaign_Name
+
+-- 7. math operation
+SELECT
+  a.Campaign_Name,
+  a.Impressions,
+  a.Clicks,
+  a.Actual_Spend,
+  b.Planned_spend,
+  ROUND((a.Actual_Spend - b.Planned_Spend ) *100 / b.Planned_Spend) AS Over_Under_spend
+FROM
+  `bigquerypratice.joins.actual_spend` AS a
+JOIN
+  `bigquerypratice.joins.planned_spend` AS b
+ON
+  a.Campaign_Name = b.Campaign_Name
